@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+
+	<title>Reservations</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous" />
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+	<div class="main mt-5 mb-5">
+		<div class="container">
+			<h2>Book a Hotel Room</h2>
+
+			<hr>
+
+			<div class="row mt-4">
+				<div class="col col-7">
+					<form action="" method="post">
+						<div class="form-group">
+							<h4 class="pb-3">Your Details</h4>
+
+							<div class="row">
+								<div class="col col-auto">
+									<label for="title">Title<abbr title="required">*</abbr></label>
+
+									<select name="title" id="title" class="form-control">
+										<option value="mr">Mr</option>
+										<option value="mrs">Mrs</option>
+										<option value="ms">Ms</option>
+									</select>
+								</div><!-- /.col -->
+
+								<div class="col">
+									<label for="first-name">First Name<abbr title="required">*</abbr></label>
+
+									<input type="text" class="form-control" name="first-name" placeholder="John" />
+								</div><!-- /.col -->
+
+								<div class="col">
+									<label for="last-name">Last Name<abbr title="required">*</abbr></label>
+
+									<input type="text" class="form-control" name="last-name" placeholder="Doe" />
+								</div><!-- /.col -->
+							</div><!-- /.row -->
+
+							<div class="row mt-4">
+								<div class="col">
+									<label for="email">Email <abbr title="required">*</abbr></label>
+
+									<input type="email" name="email" class="form-control" />
+								</div><!-- /.col -->
+								
+								<div class="col">
+									<label for="phone-number">Phone Number <abbr title="required">*</abbr></label>
+
+									<input type="email" name="phone-number" class="form-control" />
+								</div><!-- /.col -->
+							</div><!-- /.row -->
+
+							<div class="row mt-4">
+								<div class="col">
+									<label for="address-line1">Address<abbr title="required">*</abbr></label>
+									<input type="text" class="form-control" name="address-line1" placeholder="e.g. North Carolina" />
+								</div><!-- /.col -->
+							</div><!-- /.row -->
+
+							<div class="row mt-4">
+								<div class="col col-4">
+									<label for="">State<abbr title="required">*</abbr></label>
+
+									<input type="text" class="form-control" name="state" />
+								</div><!-- /.col -->
+
+								<div class="col col-4">
+									<label for="">City<abbr title="required">*</abbr></label>
+
+									<input type="text" class="form-control" name="city" />
+								</div><!-- /.col -->
+
+								<div class="col col-4">
+									<label for="">Postcode<abbr title="required">*</abbr></label>
+
+									<input type="text" class="form-control" name="postcode" />
+								</div><!-- /.col -->
+							</div><!-- /.row -->
+						</div><!-- /.form-group -->
+
+						<div class="form-group mt-5">
+							<h4 class="pb-3">Room(s)</h4>
+
+							<div class="row">
+								<div class="col">
+									<label for="type">Type</label>
+
+									<select name="type" id="type" class="form-control">
+										<option value="single-room">Single Room</option>
+										<option value="double-room">Double Room</option>
+										<option value="apartment">Apartment</option>
+										<option value="maisonette">Maisonette</option>
+									</select>
+								</div><!-- /.col -->
+
+								<div class="col">
+									<label for="number-of-guests">Number of Guests</label>
+
+									<select name="number-of-guests" id="number-of-guests" class="form-control">
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+									</select>
+								</div><!-- /.col -->
+							</div><!-- /.row -->
+
+							<div class="row mt-3">
+								<div class="col">
+									<button class="btn btn-secondary btn-sm">Add Room</button>
+								</div><!-- /.col -->
+							</div><!-- /.row -->
+						</div><!-- /.form-group -->
+
+						<div class="form-group mt-5">
+							<h4 class="pb-3">Check-in / Check-out</h4>
+
+							<div class="row">
+								<div class="col">
+									<label for="date-from">From<abbr title="required">*</abbr></label>
+
+									<input type="text" class="form-control datepicker" name="date-from" id="date-from" />
+								</div><!-- /.col -->
+
+								<div class="col">
+									<label for="date-to">To<abbr title="required">*</abbr></label>
+
+									<input type="text" class="form-control datepicker" name="date-to" id="date-to" />
+								</div><!-- /.col -->
+							</div><!-- /.row -->
+						</div><!-- /.form-group -->
+
+						<div class="form-group mt-5">
+							<h4 class="pb-3">Extras</h4>
+
+							<div class="row">
+								<div class="col">
+									<div class="form-check">
+										<input type="checkbox" class="form-check-input" name="extras[]" value="parking-spot" />
+
+										<label type="checkbox" class="form-check-label">Parking Spot <strong>(+$30 / day)</strong></label>
+									</div><!-- /.form-check -->
+
+									<div class="form-check">
+										<input type="checkbox" class="form-check-input" name="extras[]" value="car-rent" />
+
+										<label type="checkbox" class="form-check-label">Car Rent <strong>(+$50 / day)</strong></label>
+									</div><!-- /.form-check -->
+
+									<div class="form-check">
+										<input type="checkbox" class="form-check-input" name="extras[]" value="travel-guide" />
+
+										<label type="checkbox" class="form-check-label">Travel Guide <strong>(+$50 / day)</strong></label>
+									</div><!-- /.form-check -->
+								</div><!-- /.col -->
+							</div><!-- /.row -->
+						</div><!-- /.form-group -->
+
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</form>
+				</div><!-- /.col col-8 -->
+
+				<div class="col col-5 p-4">
+					<div class="card">
+						<h5 class="card-header">Summary</h5><!-- /.card-head -->
+
+						<div class="card-body">
+							<p>From <strong>21/06/2018</strong> to <strong>25/06/2018</strong> (5 days):</p>
+
+							<ul>
+								<li>1 x Apartment Room (3 people) — <strong>$1350</strong></li>
+								<li>+ Parking Spot — <strong>$150</strong></li>
+							</ul>
+						</div><!-- /.card-body -->
+
+						<div class="card-footer text-right">Total Amount: <strong>$1500</strong></div><!-- /.card-footer -->
+					</div><!-- /.card -->
+
+					<div class="card mt-5">
+						<h5 class="card-header">Rates</h5><!-- /.card-header -->
+
+						<div class="card-body">
+							<table class="table table-bordered">
+								<tr>
+									<td>Single Room (1 person)</td>
+									<th>$50</th>
+								</tr>
+								
+								<tr>
+									<td>Double Room (1 to 3 people)</td>
+									<th>$60 / person</th>
+								</tr>
+
+								<tr>
+									<td>Apartament (1 to 5 people)</td>
+									<th>$90 / person</th>
+								</tr>
+
+								<tr>
+									<td>Maisonette (1 to 5 people)</td>
+									<th>$130 / person</th>
+								</tr>
+							</table>
+						</div><!-- /.card-body -->
+					</div><!-- /.card -->
+				</div><!-- /.col col-4 -->
+			</div><!-- /.row -->
+		</div><!-- /.container -->
+	</div><!-- /.main -->
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>

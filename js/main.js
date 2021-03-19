@@ -129,11 +129,11 @@ document.getElementById("form1").addEventListener("submit", (event) => {
     //check for empty fields (required field supported by all browsers - popovers' text with "fill out this field")
     !x[i].value
       ? (x[i].style.border = "1px solid red")
-      : (x[i].style.border = "1px solid green");
-  }
+      : (x[i].style.border = "1px solid green"); }
   console.log("Submit"); */
 
   //front-end validation
+
   let incorrectFields = 0;
   var x = document
     .getElementById("form1")
@@ -192,10 +192,10 @@ document.getElementById("form1").addEventListener("submit", (event) => {
     alert("Wrong Input \n//boxes highlighted in red//");
   } else {
     //no empty/wrong fields - collect info & perform submit
-    //the code below is working, but I cannot implement it to collect and send all the data to be validated.... sorry
+    //the example below is working, but I cannot implement it to collect and send all the data to be validated.... sorry
     let data = [detailsSummary, selectionSummary, extras];
     console.log("COMBINED: ", data);
-    /*  $.ajax({
+    /*       $.ajax({
       url: "form_validation.php", //the page containing php script
       type: "post", //request type,
       dataType: "json",
@@ -203,7 +203,7 @@ document.getElementById("form1").addEventListener("submit", (event) => {
       success: function (result) {
         alert(result.abc + "\nData collected: \n", result.second);
       },
-    });   */
+    });    */
   }
 });
 

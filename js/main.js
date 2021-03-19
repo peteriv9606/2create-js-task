@@ -3,7 +3,16 @@
 var datefrom;
 var dateto;
 var clonedCount = 0;
-var selectionSummary = [];
+var selectionSummary = [
+  {
+    selectionId: "",
+    type: "",
+    guests: 0,
+    price: 0,
+  },
+];
+var extras = [];
+
 //		## INIT
 (function ($, document, window, undefined) {
   $(document).ready(function () {
@@ -83,36 +92,7 @@ function getDateDiff() {
   return Math.round(res);
 }
 
-function handleDateChange(el) {
-  //check if field has value
-  if (el.value) {
-    if (el.id == "date-from") {
-      datefrom = el.value;
-      if (getDateDiff() < 0) {
-        alert("Please select a day before " + dateto + ".");
-        //selected day is after the to date
-        //bad date selected
-        console.log("bad date selection");
-        datefrom = "";
-        console.log("datefrom reset: ", datefrom);
-        el.value = "";
-        el.focus();
-        resetDateInputs();
-      }
-    } else if (el.id == "date-to") {
-      dateto = el.value;
-      if (getDateDiff() < 0) {
-        //selected day is before the from date
-        //bad date selected
-        alert("Please select a day after " + datefrom + ".");
-        dateto = "";
-        console.log("dateto reset: ", dateto);
-        el.value = "";
-        el.focus();
-        resetDateInputs();
-      }
-    }
-  }
+function updateDomDates() {
   if (datefrom && dateto) {
     //convert to example format (DD-MM-YYYY)
     var newDateFrom = new Date(datefrom).toLocaleDateString("en-UK");
@@ -156,62 +136,118 @@ document.getElementById("form1").addEventListener("submit", (event) => {
 
 //		## 3.) Displaying the room type, number of guests and total sum of staying days
 
-function handleOptionSelect(e) {
-  console.log(e.id, e.value);
-  //	maybe not the best way to access the second selection, but if you do not select an option from the same row and just add
-  //		another row, there is an error
-  let type = e.parentNode.parentNode.children[0].children[1];
-  let guests = e.parentNode.parentNode.children[1].children[1];
-  let existing = document.getElementById("listItem" + clonedCount);
-  //work with current row-summaryData (rowId = listItemId)
-  let rowID = e.id.match(/\d+/)[0];
-  console.log("rowID: ", rowID);
-  if (existing) console.log(existing.children);
-
-  if (isSelectionValid(type, guests)) {
-    let listItem = selectionSummary.filter((item) => {
-      if (item.selectionId === rowID) return item.selectionId;
-    });
-    if (listItem.length == 0) {
-      console.log("not found in list - adding");
-      //id not found - should add it to the list
-      selectionSummary.push({
-        selectionId: rowID,
-        type: type.value,
-        guests: guests.value,
-        price: calculatePrice(type.value, guests.value),
-      });
-
-      //add to DOM
-      let details = document.getElementById("summaryDetailsList");
-      details.innerHTML = selectionSummary.map((e) => {
-        return (
-          '<li id="listItem' +
-          e.selectionId +
-          '">1 x ' +
-          e.type +
-          " (" +
-          e.guests +
-          (e.guests > 1
-            ? " people) — <strong>$" +
-              (e.price ? e.price : "-") +
-              "</strong></li>"
-            : " person) — <strong>$" +
-              (e.price ? e.price : "-") +
-              "</strong></li>")
-        );
-      });
-    } else {
-      //item not in list - pushing in list
-      console.log("ITEM FOUND IN LIST - SHOULD EDIT!!!!!", listItem);
-    }
+function handleChange(e) {
+  let str = e.id.replace(/[0-9]/g, "");
+  let rowID;
+  if (str != "date-from" && str != "date-to") {
+    rowID = e.id.match(/\d+/)[0];
   }
-  console.log("selectionSummary: ", selectionSummary);
+
+  switch (e.id) {
+    case "date-from":
+      datefrom = e.value;
+      if (getDateDiff() < 0) {
+        alert("Please select a day before " + dateto + ".");
+        //selected day is after the to date
+        //bad date selected
+        console.log("bad date selection");
+        datefrom = "";
+        console.log("datefrom reset: ", datefrom);
+        e.value = "";
+        e.focus();
+        resetDateInputs();
+      } else {
+        console.log("datefrom: ", datefrom);
+        updateDomDates();
+      }
+      break;
+    case "date-to":
+      dateto = e.value;
+      if (getDateDiff() < 0) {
+        //selected day is before the from date
+        //bad date selected
+        alert("Please select a day after " + datefrom + ".");
+        dateto = "";
+        console.log("dateto reset: ", dateto);
+        e.value = "";
+        e.focus();
+        resetDateInputs();
+      } else {
+        console.log("dateto: ", dateto);
+        updateDomDates();
+      }
+      break;
+  }
+  switch (str) {
+    case "type":
+      //check if existing - if true - perform update on element
+      //if not - check if first element - if true - perform update on first element
+      //if not - element is new - push to sectionSummary
+      var firstEl = selectionSummary.filter((item) => item.selectionId == "");
+      var existingEl = selectionSummary.filter(
+        (item) => item.selectionId == rowID
+      );
+
+      if (firstEl.length) {
+        //first element
+        getGuestCapacity(e.value);
+        firstEl[0].selectionId = rowID;
+        firstEl[0].type = e.value;
+        selectionSummary[0] = firstEl[0];
+      } else if (existingEl.length) {
+        //existing element
+        existingEl[0].type = e.value;
+      } else {
+        //new item
+        getGuestCapacity(e.value);
+        selectionSummary.push({
+          selectionId: rowID,
+          type: e.value,
+          guests: 0,
+          price: 0,
+        });
+      }
+      break;
+    case "number-of-guests":
+      //check capacity
+
+      var firstEl = selectionSummary.filter((item) => item.selectionId == "");
+      var existingEl = selectionSummary.filter(
+        (item) => item.selectionId == rowID
+      );
+
+      if (firstEl.length) {
+        //first element
+        getAvailableRooms(e.value);
+        firstEl[0].selectionId = rowID;
+        firstEl[0].guests = e.value;
+        selectionSummary[0] = firstEl[0];
+      } else if (existingEl.length) {
+        //existing element
+
+        existingEl[0].guests = e.value;
+      } else {
+        //new item
+        getAvailableRooms(e.value);
+        selectionSummary.push({
+          selectionId: rowID,
+          type: "",
+          guests: e.value,
+          price: 0,
+        });
+      }
+
+      break;
+  }
+
+  console.log("SelectionSummary list status: ", selectionSummary);
+  checkFields();
 }
 
 function isSelectionValid(type, guests) {
   //check if both options are selected from the row
   //validate capacity for single and double rooms
+
   if (type.value && guests.value) {
     if (
       (type.value == "single-room" && guests.value == 1) ||
@@ -234,6 +270,7 @@ function isSelectionValid(type, guests) {
     }
   } else {
     console.log("Error, has at least one empty field!");
+    console.log("Type.value = ", type.value, " guests.value = ", guests.value);
     guests.style.border = "1px solid red";
     return false;
   }
@@ -247,7 +284,6 @@ function calculatePrice(type, guests) {
       case "single-room":
         //$50/person
         roomPrice = guests * 50 * days;
-
         break;
       case "double-room":
         //$60/person
@@ -262,12 +298,125 @@ function calculatePrice(type, guests) {
         roomPrice = guests * 130 * days;
         break;
       default:
-        roomprice += 0;
+        roomPrice += 0;
         break;
     }
     return roomPrice;
   } else
     alert("Please choose valid date in order to calculate the correct price");
+}
+
+function getAvailableRooms(e) {
+  switch (e) {
+    case "1":
+      alert("Valid Room types for (1) person - All");
+      break;
+    case "2":
+      alert("Valid Room types for (2) people - All but Single Room");
+      break;
+    case "3":
+      alert(
+        "Valid Room types for (3) people - Double Room, Apartament and Maisonette"
+      );
+      break;
+    case "4":
+    case "5":
+      alert(
+        "Valid Room types for (" + e + ") people - Apartament and Maisonette"
+      );
+      break;
+
+    default:
+      alert("Please select a valid Guest Number option.");
+      break;
+  }
+}
+
+function getGuestCapacity(e) {
+  switch (e) {
+    case "single-room":
+      alert("(" + e + ") capacity: 1 person");
+      break;
+    case "double-room":
+      alert("(" + e + ") capacity: up to 3 people");
+      break;
+    case "apartment":
+      alert("(" + e + ") capacity: up to 5 people");
+      break;
+    case "maisonette":
+      alert("(" + e + ") capacity: up to 5 people");
+      break;
+
+    default:
+      alert("Please select a valid Room Type option.");
+      break;
+  }
+}
+
+function checkFields() {
+  //checking all respectable fields in DOM
+
+  let parent = document.getElementById("roomParentComponent");
+  children = parent.querySelectorAll("[id^='duplicator']");
+  children.forEach((row) => {
+    let type = row.children[0].children[1];
+    let guests = row.children[1].children[1];
+    let rowID = type.id.match(/\d+/)[0];
+    if (isSelectionValid(type, guests)) {
+      if (type.value && guests.value && getDateDiff() > 0) {
+        //if both exist - calclulate price and update price in list and summary in DOM
+        let item = selectionSummary.filter((item) => item.selectionId == rowID);
+        item[0].price = calculatePrice(type.value, guests.value);
+
+        selectionSummary.map((el) => {
+          if (el.selectionId == item[0].selectionId) {
+            el.price = item[0].price;
+          }
+        });
+      } else {
+        //wrong input - reset price
+        selectionSummary.map((item) => {
+          if (item.selectionId == rowID) {
+            item.price = 0;
+          }
+        });
+      }
+    }
+  });
+  domUmpdate();
+}
+
+function domUmpdate() {
+  let detailsElement = document.getElementById("summaryDetailsList");
+  detailsElement.innerHTML = "";
+  let tsaElement = document.getElementById("totalSummaryAmount");
+  let tsamount = 0;
+  selectionSummary.map((item) => {
+    if (item.selectionId && item.type && item.guests && item.price != 0) {
+      tsamount += item.price;
+
+      detailsElement.innerHTML +=
+        '<li id="listItem' +
+        item.selectionId +
+        '">1 x ' +
+        item.type +
+        ` (` +
+        item.guests +
+        (item.guests > 1
+          ? ` people) — <strong>$` +
+            (item.price ? item.price : `-`) +
+            `</strong></li>`
+          : ` person) — <strong>$` +
+            (item.price ? item.price : `-`) +
+            `</strong></li>`);
+
+      tsaElement.innerHTML = tsamount
+        ? "Total Amount: <strong>$" +
+          (tsamount + getCheckboxesState()) +
+          "</strong>"
+        : null;
+    }
+  });
 }
 
 //		## 5. Integration of the "Add Room" button
@@ -293,4 +442,45 @@ function handleAddRoomClick() {
     "1px solid #ced4da";
   currRow.querySelector("#number-of-guests" + clonedCount).style.border =
     "1px solid #ced4da";
+}
+
+function getCheckboxesState() {
+  children = document.getElementsByName("extras[]");
+  let total = 0;
+  children.forEach((state) => {
+    if (state.checked == true) {
+      switch (state.value) {
+        case "parking-spot":
+          // + $30/day
+          total += 30;
+          break;
+        case "car-rent":
+          // + $50/day
+          total += 50;
+          break;
+        case "travel-guide":
+          // + $50/day
+          total += 50;
+          break;
+        default:
+          total = 0;
+          break;
+      }
+      console.log(state.value, " is checked");
+      extras.push(state.value);
+    }
+  });
+
+  eList = document.getElementById("extrasList");
+  eList.innerHTML = "";
+  eList.innerHTML = extras
+    .map((item) => {
+      return `<li> ` + item + ` — <strong>$150</strong></li>`;
+    })
+    .join("");
+
+  if (getDateDiff()) {
+    total = total * getDateDiff();
+  }
+  return total;
 }

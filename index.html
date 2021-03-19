@@ -22,6 +22,7 @@
     />
   </head>
   <body>
+    <input type="button" onclick="getCheckboxesState()" value="checkboxstate" />
     <div class="main mt-5 mb-5">
       <div class="container">
         <h2>Book a Hotel Room</h2>
@@ -186,7 +187,7 @@
                       name="type"
                       id="type0"
                       class="form-control"
-                      onchange="handleOptionSelect(this)"
+                      onchange="handleChange(this)"
                       required
                     >
                       <option selected value=""></option>
@@ -205,7 +206,7 @@
                       name="number-of-guests"
                       id="number-of-guests0"
                       class="form-control"
-                      onchange="handleOptionSelect(this)"
+                      onchange="handleChange(this)"
                       required
                     >
                       <option selected value=""></option>
@@ -252,7 +253,7 @@
                       class="form-control datepicker"
                       name="date-from"
                       id="date-from"
-                      onchange="handleDateChange(this)"
+                      onchange="handleChange(this)"
                     />
                   </div>
                   <!-- /.col -->
@@ -268,7 +269,7 @@
                       class="form-control datepicker"
                       name="date-to"
                       id="date-to"
-                      onchange="handleDateChange(this)"
+                      onchange="handleChange(this)"
                     />
                   </div>
                   <!-- /.col -->
@@ -288,6 +289,7 @@
                         class="form-check-input"
                         name="extras[]"
                         value="parking-spot"
+                        onchange="checkFields()"
                       />
 
                       <label type="checkbox" class="form-check-label"
@@ -302,6 +304,7 @@
                         class="form-check-input"
                         name="extras[]"
                         value="car-rent"
+                        onchange="checkFields()"
                       />
 
                       <label type="checkbox" class="form-check-label"
@@ -316,6 +319,7 @@
                         class="form-check-input"
                         name="extras[]"
                         value="travel-guide"
+                        onchange="checkFields()"
                       />
 
                       <label type="checkbox" class="form-check-label"
@@ -347,18 +351,12 @@
                   <span id="daysTxt"></span>
                 </p>
 
-                <ul id="summaryDetailsList">
-                  <li>
-                    1 x Apartment Room (3 people) — <strong>$1350</strong>
-                  </li>
-                  <li>+ Parking Spot — <strong>$150</strong></li>
-                </ul>
+                <ul id="summaryDetailsList" style="list-style: '+'"></ul>
+                <ul id="extrasList" style="list-style: '+'"></ul>
               </div>
               <!-- /.card-body -->
 
-              <div class="card-footer text-right">
-                Total Amount: <strong>$1500</strong>
-              </div>
+              <div class="card-footer text-right" id="totalSummaryAmount"></div>
               <!-- /.card-footer -->
             </div>
             <!-- /.card -->

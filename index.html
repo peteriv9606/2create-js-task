@@ -40,7 +40,13 @@
                       >Title<abbr title="required">*</abbr></label
                     >
 
-                    <select name="title" id="title" class="form-control">
+                    <select
+                      name="title"
+                      id="title"
+                      class="form-control"
+                      onclick="resetFieldColor(this)"
+                    >
+                      <option selected value=""></option>
                       <option value="mr">Mr</option>
                       <option value="mrs">Mrs</option>
                       <option value="ms">Ms</option>
@@ -58,6 +64,7 @@
                       class="form-control"
                       name="first-name"
                       placeholder="John"
+                      onclick="resetFieldColor(this)"
                     />
                   </div>
                   <!-- /.col -->
@@ -72,6 +79,7 @@
                       class="form-control"
                       name="last-name"
                       placeholder="Doe"
+                      onclick="resetFieldColor(this)"
                     />
                   </div>
                   <!-- /.col -->
@@ -91,6 +99,7 @@
                       placeholder="example@email.com"
                       onfocusout="validateEmail(this)"
                       onclick="handleEmailClick(this)"
+                      onclick="resetFieldColor(this)"
                     />
                   </div>
                   <!-- /.col -->
@@ -105,6 +114,7 @@
                       name="phone-number"
                       class="form-control"
                       onkeyup="handlePhoneNumberInput(this)"
+                      onclick="resetFieldColor(this)"
                     />
                   </div>
                   <!-- /.col -->
@@ -117,6 +127,7 @@
                       >Address<abbr title="required">*</abbr></label
                     >
                     <input
+                      onclick="resetFieldColor(this)"
                       type="text"
                       class="form-control"
                       name="address-line1"
@@ -131,23 +142,38 @@
                   <div class="col col-4">
                     <label for="">State<abbr title="required">*</abbr></label>
 
-                    <input type="text" class="form-control" name="state" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="state"
+                      onclick="resetFieldColor(this)"
+                    />
                   </div>
                   <!-- /.col -->
 
                   <div class="col col-4">
                     <label for="">City<abbr title="required">*</abbr></label>
 
-                    <input type="text" class="form-control" name="city" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="city"
+                      onclick="resetFieldColor(this)"
+                    />
                   </div>
                   <!-- /.col -->
 
                   <div class="col col-4">
-                    <label for=""
+                    <label for="postcode"
                       >Postcode<abbr title="required">*</abbr></label
                     >
 
-                    <input type="text" class="form-control" name="postcode" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="postcode"
+                      onclick="resetFieldColor(this)"
+                    />
                   </div>
                   <!-- /.col -->
                 </div>

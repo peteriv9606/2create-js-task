@@ -3,6 +3,9 @@
 var datefrom;
 var dateto;
 var clonedCount = 0;
+
+var extras = [];
+var detailsSummary = [];
 var selectionSummary = [
   {
     selectionId: "",
@@ -11,7 +14,6 @@ var selectionSummary = [
     price: 0,
   },
 ];
-var extras = [];
 
 //		## INIT
 (function ($, document, window, undefined) {
@@ -20,20 +22,6 @@ var extras = [];
     $(".datepicker").datepicker();
     $("#number-of-guests0").value = "";
     $("#type0").value = "";
-    var checkboxes = document.querySelectorAll(
-      "input [type=checkbox] [name=extras]"
-    );
-    console.log(checkboxes);
-    let enabledSettings = [];
-    checkboxes.forEach(function (checkbox) {
-      checkbox.addEventListener("change", function () {
-        enabledSettings = Array.from(checkboxes) // Convert checkboxes to an array to use filter and map.
-          .filter((i) => i.checked) // Use Array.filter to remove unchecked checkboxes.
-          .map((i) => i.value); // Use Array.map to extract only the checkbox values from the array of objects.
-
-        console.log(enabledSettings);
-      });
-    });
   });
 })(jQuery, document, window);
 
@@ -50,6 +38,13 @@ var extras = [];
 			* Changed date format to match example code
 				/ex. 03.22.2019 => 22.03.2019
 */
+
+function resetFieldColor(el) {
+  //case 1: border is red because of php validation error - field is empty
+  if ((el.style.border = "1px solid red")) {
+    el.style.border = "1px solid #ced4da";
+  }
+}
 
 function validateEmail(mail) {
   if (mail.value) {
@@ -80,9 +75,9 @@ function onlyNumbers(str) {
 function handlePhoneNumberInput(number) {
   if (number.value) {
     //check if fields contains only numbers, and if empty - set border to default value
-    onlyNumbers(number.value)
-      ? (number.style.border = "1px solid green")
-      : (number.style.border = "1px solid red");
+    if (onlyNumbers(number.value)) {
+      number.style.border = "1px solid green";
+    } else number.style.border = "1px solid red";
   } else number.style.border = "1px solid #ced4da";
 }
 
@@ -123,9 +118,11 @@ function resetDateInputs() {
 document.getElementById("form1").addEventListener("submit", (event) => {
   //dont refresh on send
   event.preventDefault();
+
   //find all fields from the form that has the required attribute ( This was the first option I used - it's better,
   //but for the purpouse of only JavaScript validation and PHP valdation -
-  //I'm changing this as I do not want the balloon prompting the user to "fill out this field" to be shown )
+  //I'm changing this as I do not want the balloon prompting the user to "fill out this field" to be shown, and also
+  //doing some field input validation as well)
 
   /*  var x = document.getElementById("form1").querySelectorAll("[required]");
   for (i = 0; i < x.length; i++) {
@@ -135,37 +132,78 @@ document.getElementById("form1").addEventListener("submit", (event) => {
       : (x[i].style.border = "1px solid green");
   }
   console.log("Submit"); */
+
+  //front-end validation
   let incorrectFields = 0;
   var x = document
     .getElementById("form1")
     .querySelectorAll('abbr[title="required"]');
   x.forEach((field) => {
     let requiredField = field.parentNode.parentNode.childNodes[3];
-    //console.log("Required Field Value: ", requiredField.value);
     if (!requiredField.value) {
       incorrectFields += 1;
       requiredField.style.border = "1px solid red";
     } else {
-      // mark all correct fields
+      // mark and update all correct fields
       requiredField.style.border = "1px solid green";
+      //update to detailsSummary list
+      switch (requiredField.name) {
+        case "title":
+          detailsSummary.title = requiredField.value;
+          break;
+        case "first-name":
+          detailsSummary.firstName = requiredField.value;
+          break;
+        case "last-name":
+          detailsSummary.lastName = requiredField.value;
+          break;
+        case "email":
+          detailsSummary.email = requiredField.value;
+          break;
+        case "phone-number":
+          detailsSummary.phoneNumber = requiredField.value;
+          break;
+        case "address-line1":
+          detailsSummary.address = requiredField.value;
+          break;
+        case "state":
+          detailsSummary.state = requiredField.value;
+          break;
+        case "city":
+          detailsSummary.city = requiredField.value;
+          break;
+        case "postcode":
+          detailsSummary.postcode = requiredField.value;
+          break;
+      }
     }
   });
-  if (incorrectFields == 0) {
+  var y = document.getElementById("form1").querySelectorAll("[required]");
+  y.forEach((field) => {
+    if (field.style.border == "1px solid red") {
+      console.log("Has some incorrectly inputed data.");
+      incorrectFields += 1;
+    }
+  });
+  console.log("Total Incorrect fields:", incorrectFields);
+  if (incorrectFields != 0) {
     //form has incorrect fields
-    alert(
-      "You have some empty fields. Please check your input.//red highlighted boxes//"
-    );
+
+    alert("Wrong Input \n//boxes highlighted in red//");
   } else {
-    //no empty fields - perform submit
-    $.ajax({
+    //no empty/wrong fields - collect info & perform submit
+    //the code below is working, but I cannot implement it to collect and send all the data to be validated.... sorry
+    let data = [detailsSummary, selectionSummary, extras];
+    console.log("COMBINED: ", data);
+    /*  $.ajax({
       url: "form_validation.php", //the page containing php script
       type: "post", //request type,
       dataType: "json",
-      data: { registration: "success", name: "xyz", email: "abc@gmail.com" },
+      data: { status: "success", name: "xyz", email: "abc@gmail.com" },
       success: function (result) {
-        console.log(result.abc);
+        alert(result.abc + "\nData collected: \n", result.second);
       },
-    });
+    });   */
   }
 });
 
@@ -499,17 +537,21 @@ function getCheckboxesState() {
         case "parking-spot":
           // + $30/day
           total += 30;
+
           break;
         case "car-rent":
           // + $50/day
           total += 50;
+
           break;
         case "travel-guide":
           // + $50/day
           total += 50;
+
           break;
         default:
           total = 0;
+
           break;
       }
       extras.push(state.value);

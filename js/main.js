@@ -123,15 +123,50 @@ function resetDateInputs() {
 document.getElementById("form1").addEventListener("submit", (event) => {
   //dont refresh on send
   event.preventDefault();
-  //find all fields from the form that has the required attribute
-  var x = document.getElementById("form1").querySelectorAll("[required]");
+  //find all fields from the form that has the required attribute ( This was the first option I used - it's better,
+  //but for the purpouse of only JavaScript validation and PHP valdation -
+  //I'm changing this as I do not want the balloon prompting the user to "fill out this field" to be shown )
+
+  /*  var x = document.getElementById("form1").querySelectorAll("[required]");
   for (i = 0; i < x.length; i++) {
     //check for empty fields (required field supported by all browsers - popovers' text with "fill out this field")
     !x[i].value
       ? (x[i].style.border = "1px solid red")
       : (x[i].style.border = "1px solid green");
   }
-  console.log("Submit");
+  console.log("Submit"); */
+  let incorrectFields = 0;
+  var x = document
+    .getElementById("form1")
+    .querySelectorAll('abbr[title="required"]');
+  x.forEach((field) => {
+    let requiredField = field.parentNode.parentNode.childNodes[3];
+    //console.log("Required Field Value: ", requiredField.value);
+    if (!requiredField.value) {
+      incorrectFields += 1;
+      requiredField.style.border = "1px solid red";
+    } else {
+      // mark all correct fields
+      requiredField.style.border = "1px solid green";
+    }
+  });
+  if (incorrectFields == 0) {
+    //form has incorrect fields
+    alert(
+      "You have some empty fields. Please check your input.//red highlighted boxes//"
+    );
+  } else {
+    //no empty fields - perform submit
+    $.ajax({
+      url: "form_validation.php", //the page containing php script
+      type: "post", //request type,
+      dataType: "json",
+      data: { registration: "success", name: "xyz", email: "abc@gmail.com" },
+      success: function (result) {
+        console.log(result.abc);
+      },
+    });
+  }
 });
 
 //		## 3.) Displaying the room type, number of guests and total sum of staying days
@@ -268,10 +303,16 @@ function isSelectionValid(type, guests) {
       guests.style.border = "1px solid red";
       return false;
     }
+  } else if (!type.value && !guests.value) {
+    console.log("Record removed from data");
+    guests.style.border = "1px solid green";
+    type.style.border = "1px solid green";
   } else {
     console.log("Error, has at least one empty field!");
     console.log("Type.value = ", type.value, " guests.value = ", guests.value);
-    guests.style.border = "1px solid red";
+    if (type.value) {
+      guests.style.border = "1px solid red";
+    } else type.style.border = "1px solid red";
     return false;
   }
 }
@@ -446,7 +487,12 @@ function handleAddRoomClick() {
 
 function getCheckboxesState() {
   children = document.getElementsByName("extras[]");
-  let total = 0;
+  eList = document.getElementById("extrasList");
+
+  eList.innerHTML = "";
+  extras = [];
+
+  var total = 0;
   children.forEach((state) => {
     if (state.checked == true) {
       switch (state.value) {
@@ -466,16 +512,19 @@ function getCheckboxesState() {
           total = 0;
           break;
       }
-      console.log(state.value, " is checked");
       extras.push(state.value);
     }
   });
 
-  eList = document.getElementById("extrasList");
-  eList.innerHTML = "";
   eList.innerHTML = extras
     .map((item) => {
-      return `<li> ` + item + ` — <strong>$150</strong></li>`;
+      return (
+        `<li> ` +
+        item +
+        ` — <strong>$` +
+        (item == "parking-spot" ? 30 * getDateDiff() : 50 * getDateDiff()) +
+        `</strong></li>`
+      );
     })
     .join("");
 
